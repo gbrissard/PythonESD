@@ -13,15 +13,21 @@ print """          __  ___               ___    ____
                   By : HUNT3R\n\n"""
 
 myTarget = raw_input('Enter target IP address : ')
+rangeStart = int(input("Enter port range start : "))
+rangeStop = int(input("Enter port range stop : "))
+fullRange = range(rangeStart, rangeStop)
+closedPorts = []
 
 print("\n--> BEGIN SCAN OF : " + myTarget + "\n")
 
-for i in range(0,1000):
+for i in fullRange:
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print myTarget
-    scanResult = mySocket.connect((str(myTarget), int(i)))
+    scanResult = mySocket.connect_ex((str(myTarget), int(i)))
     if scanResult == 0:
-        print "Port {}: 	 Open".format(i)
+        print "[+]Port {}: 	 Open".format(i)
     else:
-        print "Port {}: 	 Closed".format(i)
+        closedPorts.append(i)
     mySocket.close()
+
+print("Closed ports : ")
+print(closedPorts)
