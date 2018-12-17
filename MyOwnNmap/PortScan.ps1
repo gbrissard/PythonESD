@@ -1,4 +1,4 @@
-Write-Host "
+cls ; Write-Host "
           __  ___               ___    ____ 
    ____  /  |/  /___ _____     |__ \  / __ \
   / __ \/ /|_/ / __ ``/ __ \    __/ / / / / /
@@ -13,6 +13,21 @@ $RanStart = Read-Host "Enter port range start"
 $RanStop = Read-Host "Enter port range stop"
 $Range = $RanStart..$RanStop
 
-$Range | % {
-    Test-NetConnection -ComputerName $Target -Port $_
+function Test-Port {
+    param (
+        [parameter(Mandatory = $true)][string]$TargetIP,
+        [parameter(Mandatory = $true)][string[]]$Ports
+    )
+
+    foreach ($Port in $Ports) {
+        Start-Job -Name "port($($Port))" -ScriptBlock {
+            Test-NetConnection -ComputerName $args[0] -Port $args[1] -WarningAction SilentlyContinue
+        } -ArgumentList $TargetIP, $Port
+    }
+
+    $r = Get-Job | ? {$_.Name -like "port*"} | Receive-Job -Wait
+    return $r
 }
+
+$Result = Test-Port -TargetIP $Target -Ports $Range
+$Result | ?{$_.TcpTestSucceeded} | Select-Object RemoteAddress, RemotePort, TcpTestSucceeded | Sort-Object -Property RemotePort | ft -AutoSize
