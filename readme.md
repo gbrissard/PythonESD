@@ -7,3 +7,4 @@ Python ESD
 * Tests du module "OS"
 * Scanner de ports avec paramètres (utilisant Scapy)
 * Sniffer http (utilisant Scappy)
+* Reverse shell
