@@ -1,5 +1,4 @@
 from scapy.all import * # 10.101.200.28
-from random import randint
 from colorama import init, Fore, Back
 import os, datetime
 
@@ -26,7 +25,7 @@ closedPortCnt = 0
 print("\n--> BEGIN SCAN OF : " + myTarget + " (from port " + str(rangeStart) + " to " + str(rangeStop) + ")\n")
 
 for i in fullRange:
-    randSrcPort = randint(40000, 65000)
+    randSrcPort = RandShort()
     scanResult = sr1(IP(dst=myTarget)/TCP(sport=randSrcPort, dport=i, flags="S"), timeout=10, verbose=False)
     if (scanResult.getlayer(TCP).flags == 0x12):
         openPortCnt += 1
