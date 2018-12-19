@@ -1,14 +1,14 @@
 function Get-LastCmd {
     # On utilise un générateur de feed RSS pour simplifier le parsing du flux Twitter
-    $Html = (Invoke-WebRequest -Uri "https://queryfeed.net/tw?q=%40S1mpleCC" -UseBasicParsing).Content
-
-    # On recherche les entrées correspondant à la classe d'un tweet, on récupère le premier (plus récent)
-    $RawLastCMD = $html.Split("`n") | ? {$_ -match "CDATA" -and $_ -match "class=`"TweetTextSize"} | Select-Object -First 1
+    $Html = (Invoke-WebRequest -Uri "https://twitrss.me/twitter_user_to_rss/?user=S1mpleCC" -UseBasicParsing).Content
 
     # On travaille la string pour garder seulement le payload
-    $LastCMD = $RawLastCMD.Split(">")[1].Split("<")[0]
-    
-    return $LastCMD
+    $LastCMD = ([xml]$Html).GetElementsByTagName("item") | 
+                    Select-Object title, pubDate, @{l="date";e={$_.pubDate | Get-Date}} |
+                    Sort-Object -Property date -Descending | 
+                    Select-Object -First 1
+
+    return $LastCMD.title
 }
 
 $PrevCmd = ""
