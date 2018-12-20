@@ -51,4 +51,6 @@ def decrypt(enc, password):
     cipher = AES.new(private_key, AES.MODE_CBC, iv)
     return unpad(cipher.decrypt(enc[16:]))
 
+bytes.decode(decrypt(encrypted, password))
+
 """
